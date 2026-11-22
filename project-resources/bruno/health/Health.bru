@@ -1,0 +1,29 @@
+meta {
+  name: Health
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/actuator/health
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Status is UP", function () {
+    expect(res.getBody().status).to.equal("UP");
+  });
+}
+
+docs {
+  Overall application health (Spring Boot Actuator).
+}
