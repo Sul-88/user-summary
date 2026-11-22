@@ -8,6 +8,15 @@ spring:
     virtual:
       enabled: true
 
+client:
+  connect-timeout: 500ms
+  users:
+    base-url: https://jsonplaceholder.typicode.com
+    read-timeout: 2s
+  posts:
+    base-url: https://jsonplaceholder.typicode.com
+    read-timeout: 1500ms
+
 management:
   endpoints:
     web:
