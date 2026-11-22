@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: User Summary API
+  description: Aggregates a user and their posts into a single summary.
+  version: 1.0.0
+servers:
+- url: /
+  description: Current host
+paths:
+  /users/{id}/summary:
+    get:
+      tags:
+      - UserSummary
+      summary: User plus their posts
+      description: "The user is mandatory: if it cannot be fetched, the request fails\
+        \ (404/502/504). Posts are optional: if the posts service fails or exceeds\
+        \ its time limit, the response is still 200 with posts.status = UNAVAILABLE."
+      operationId: getUserSummary
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        "200":
+          description: Summary. posts.status may be UNAVAILABLE.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSummaryResponse"
+        "400":
+          description: INVALID_USER_ID – id is not a positive number
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: USER_NOT_FOUND – users service does not know the user
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: INTERNAL_ERROR – unexpected internal error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "502":
+          description: USER_SERVICE_ERROR – users service failed or returned an invalid
+            response
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "504":
+          description: USER_SERVICE_TIMEOUT – users service did not answer in time
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+components:
+  schemas:
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        properties:
+          type: object
+          additionalProperties: {}
+    PostItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        body:
+          type: string
+      required:
+      - body
+      - id
+      - title
+    PostsResult:
+      type: object
+      description: Result of fetching the user's posts.
+      properties:
+        status:
+          type: string
+          enum:
+          - OK
+          - UNAVAILABLE
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostItem"
+      required:
+      - status
+    UserSummaryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        posts:
+          $ref: "#/components/schemas/PostsResult"
+      required:
+      - email
+      - id
+      - name
+      - posts
+      - username
