@@ -16,6 +16,9 @@ client:
   posts:
     base-url: https://jsonplaceholder.typicode.com
     read-timeout: 1500ms
+    retry:
+      max-retries: 1
+      delay: 100ms
 
 management:
   endpoints:
