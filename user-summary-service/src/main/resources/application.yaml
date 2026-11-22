@@ -20,6 +20,10 @@ client:
       max-retries: 1
       delay: 100ms
 
+summary:
+  user-timeout: 2s
+  posts-total-timeout: 1500ms
+
 management:
   endpoints:
     web:
