@@ -1,6 +1,12 @@
 spring:
   application:
     name: user-summary
+  mvc:
+    problemdetails:
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
 
 management:
   endpoints:
